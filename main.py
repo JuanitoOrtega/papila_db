@@ -1,14 +1,48 @@
-# Recorer carpetas
-import os
+from image_manager import ImageManager
+from metadata_manager import MetadataManager
 
 
-# Definimos la carpeta de origen y destino
-source_folder = "./DB_PAPILA"
-# Listar subcarpetas
-subfolders = [f.path for f in os.scandir(source_folder) if f.is_dir()]  # ['./DB_PAPILA/FundusImages', './DB_PAPILA/ExpertsSegmentations', './DB_PAPILA/HelpCode', './DB_PAPILA/ClinicalData']
+def main():
+    dataset_path = "./DB_PAPILA"
+    metadata_file = "./data/metadata.json"
 
-# lista imagenes dentro de la carpeta FundusImages
-# FundusImages
-images_folder = os.path.join(source_folder, "FundusImages")
-images = [f for f in os.listdir(images_folder) if os.path.isfile(os.path.join(images_folder, f))]  # ['0001.jpg', '0002.jpg', '0003.jpg', '0004.jpg', '0005.jpg', '0006.jpg', '0007.jpg', '0008.jpg', '0009.jpg', '0010.jpg']
-print(f"Imagenes: {images}")
+    image_manager = ImageManager(dataset_path)
+    metadata_manager = MetadataManager(metadata_file)
+
+    while True:
+        print("\nGestión de Imágenes y Metadata")
+        print("1. Listar imágenes")
+        print("2. Agregar imagen")
+        print("3. Eliminar imagen")
+        print("4. Agregar/Actualizar metadata")
+        print("5. Eliminar metadata")
+        print("6. Salir")
+
+        choice = input("Seleccione una opción: ")
+
+        if choice == "1":
+            images = image_manager.list_images()
+            print("Imágenes disponibles:", images)
+        elif choice == "2":
+            source_path = input("Ruta de la imagen a agregar: ")
+            dest_name = input("Nombre para guardar la imagen: ")
+            image_manager.add_image(source_path, dest_name)
+        elif choice == "3":
+            image_name = input("Nombre de la imagen a eliminar: ")
+            image_manager.delete_image(image_name)
+        elif choice == "4":
+            image_name = input("Nombre de la imagen: ")
+            metadata = input("Ingrese la metadata (en formato clave:valor, separada por comas): ")
+            metadata_dict = dict(item.split(":") for item in metadata.split(","))
+            metadata_manager.add_metadata(image_name, metadata_dict)
+        elif choice == "5":
+            image_name = input("Nombre de la imagen: ")
+            metadata_manager.delete_metadata(image_name)
+        elif choice == "6":
+            print("Saliendo del programa.")
+            break
+        else:
+            print("Opción no válida. Intente de nuevo.")
+
+if __name__ == "__main__":
+    main()
