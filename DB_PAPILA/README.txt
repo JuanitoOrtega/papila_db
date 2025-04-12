@@ -1,0 +1,1 @@
+This dataset is explained in the paper "PAPILA: Dataset with fundus images and clinical data of both eyes of the same patient for glaucoma assessment",  submitted for review as Data Descriptor to the Springer Nature journal Scientific Data.
