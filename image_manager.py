@@ -2,7 +2,6 @@ import os
 import shutil
 
 
-# This script manages images in a dataset for a medical imaging project.
 class ImageManager:
     def __init__(self, dataset_path):
         self.dataset_path = dataset_path
