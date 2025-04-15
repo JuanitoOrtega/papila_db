@@ -1,3 +1,4 @@
+```shell
 papila_db/
 │
 ├── main.py                # Archivo principal para ejecutar el programa
@@ -39,3 +40,4 @@ papila_db/
 |   |   ├── RET004OD.jpg
 |   |   ├── RET004OS.jpg
 |   |   ├── ...
+```
