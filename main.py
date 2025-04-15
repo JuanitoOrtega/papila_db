@@ -12,11 +12,14 @@ def main():
     while True:
         print("\nGestión de Datos del Dataset PAPILA")
         print("1. Listar imágenes")
-        print("2. Listar contornos")
-        print("3. Leer contorno")
-        print("4. Listar pacientes")
-        print("5. Ver datos de un paciente")
-        print("6. Salir")
+        print("2. Agregar imagen con metadatos")
+        print("3. Eliminar imagen y sus metadatos")
+        print("4. Ver metadatos de una imagen")
+        print("5. Listar contornos")
+        print("6. Leer contorno")
+        print("7. Listar pacientes")
+        print("8. Ver datos de un paciente")
+        print("9. Salir")
 
         choice = input("Seleccione una opción: ")
 
@@ -24,23 +27,40 @@ def main():
             images = image_manager.list_images()
             print("Imágenes disponibles:", images)
         elif choice == "2":
+            source_path = input("Ruta de la imagen a agregar: ")
+            dest_name = input("Nombre para guardar la imagen: ")
+            excel_file = input("Nombre del archivo Excel para guardar los metadatos (ej. patient_data_od.xlsx): ")
+            metadata_input = input("Ingrese los metadatos en formato clave:valor separados por comas (ej. resolution:1920x1080,modality:Fundus): ")
+            metadata = dict(item.split(":") for item in metadata_input.split(","))
+            try:
+                image_manager.add_image(source_path, dest_name, metadata, excel_file)
+            except (FileNotFoundError, ValueError) as e:
+                print(e)
+        elif choice == "3":
+            image_name = input("Nombre de la imagen a eliminar: ")
+            image_manager.delete_image(image_name)
+        elif choice == "4":
+            image_name = input("Nombre de la imagen: ")
+            metadata = image_manager.get_metadata(image_name)
+            print(f"Metadatos de {image_name}:", metadata)
+        elif choice == "5":
             contours = contour_manager.list_contours()
             print("Contornos disponibles:", contours)
-        elif choice == "3":
+        elif choice == "6":
             contour_file = input("Nombre del archivo de contorno: ")
             try:
                 points = contour_manager.read_contour(contour_file)
                 print("Puntos del contorno:", points)
             except FileNotFoundError as e:
                 print(e)
-        elif choice == "4":
+        elif choice == "7":
             file_name = input("Nombre del archivo de datos clínicos (ej. patient_data_od.xlsx): ")
             try:
                 patients = clinical_data_manager.list_patients(file_name)
                 print("Pacientes disponibles:", patients)
             except FileNotFoundError as e:
                 print(e)
-        elif choice == "5":
+        elif choice == "8":
             file_name = input("Nombre del archivo de datos clínicos (ej. patient_data_od.xlsx): ")
             patient_id = input("ID del paciente (ej. #002): ")
             try:
@@ -48,11 +68,12 @@ def main():
                 print("Datos del paciente:", patient_data)
             except (FileNotFoundError, ValueError) as e:
                 print(e)
-        elif choice == "6":
+        elif choice == "9":
             print("Saliendo del programa.")
             break
         else:
             print("Opción no válida. Intente de nuevo.")
+
 
 if __name__ == "__main__":
     main()
