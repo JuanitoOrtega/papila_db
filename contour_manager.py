@@ -18,12 +18,3 @@ class ContourManager:
         with open(contour_path, 'r') as file:
             points = [tuple(map(float, line.split())) for line in file]
         return points
-
-    def delete_contour(self, contour_file):
-        """Elimina un archivo de contorno."""
-        contour_path = os.path.join(self.contours_folder, contour_file)
-        if os.path.exists(contour_path):
-            os.remove(contour_path)
-            print(f"Archivo de contorno {contour_file} eliminado exitosamente.")
-        else:
-            print(f"El archivo {contour_file} no existe.")

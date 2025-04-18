@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Imagen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Agregar Imagen con Metadatos</h1>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="source_path" class="form-label">Subir imagen:</label>
+                <input type="file" class="form-control" id="source_path" name="source_path" accept="image/*" required>
+            </div>
+            <div class="mb-3">
+                <label for="dest_name" class="form-label">Nombre para guardar la imagen:</label>
+                <input type="text" class="form-control" id="dest_name" name="dest_name" required>
+            </div>
+            <div class="mb-3">
+                <label for="excel_file" class="form-label">Seleccionar archivo Excel:</label>
+                <select class="form-select" id="excel_file" name="excel_file" required>
+                    <option value="patient_data_od.xlsx">patient_data_od.xlsx</option>
+                    <option value="patient_data_os.xlsx">patient_data_os.xlsx</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="metadata" class="form-label">Metadatos (clave:valor separados por comas):</label>
+                <input type="text" class="form-control" id="metadata" name="metadata" required>
+            </div>
+            <button type="submit" class="btn btn-success">Agregar Imagen</button>
+        </form>
+        <a href="{{ url_for('home') }}" class="btn btn-primary mt-4">Volver al inicio</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
