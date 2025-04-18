@@ -1,18 +1,11 @@
 import os
 import shutil
-import json
 
 
 class ImageManager:
     def __init__(self, dataset_path):
         self.dataset_path = dataset_path
         self.images_folder = os.path.join(dataset_path, "FundusImages")
-        self.metadata_file = os.path.join(dataset_path, "image_metadata.json")
-
-        # Crear el archivo de metadatos si no existe
-        if not os.path.exists(self.metadata_file):
-            with open(self.metadata_file, 'w') as f:
-                json.dump({}, f)
 
     def list_images(self):
         """Lista todas las imágenes en la carpeta FundusImages."""
@@ -76,16 +69,63 @@ class ImageManager:
         except Exception as e:
             raise ValueError(f"Error al guardar los metadatos en el archivo Excel: {e}")
 
-    def delete_image(self, image_name):
-        """Elimina una imagen del dataset y sus metadatos asociados."""
-        image_path = os.path.join(self.images_folder, image_name)
-        if os.path.exists(image_path):
-            os.remove(image_path)
-            print(f"Imagen {image_name} eliminada exitosamente.")
-            self.delete_metadata(image_name)
-        else:
-            print(f"La imagen {image_name} no existe.")
+    def delete_image(self, image_name, clinical_data_manager):
+        """
+        Elimina una imagen del dataset y sus metadatos asociados.
+        :param image_name: Nombre de la imagen.
+        :param clinical_data_manager: Instancia de ClinicalDataManager para manejar los datos clínicos.
+        """
+        import pandas as pd
 
+        # Ruta completa de la imagen
+        image_path = os.path.join(self.images_folder, image_name)
+
+        # Verificar si la imagen existe
+        if not os.path.exists(image_path):
+            raise FileNotFoundError(f"La imagen '{image_name}' no existe.")
+
+        # Eliminar la imagen
+        os.remove(image_path)
+        print(f"Imagen {image_name} eliminada exitosamente.")
+
+        # Determinar el archivo Excel según las últimas letras del nombre de la imagen
+        if image_name.endswith("OD.jpg") or image_name.endswith("OD.png"):
+            excel_file = "patient_data_od.xlsx"
+        elif image_name.endswith("OS.jpg") or image_name.endswith("OS.png"):
+            excel_file = "patient_data_os.xlsx"
+        else:
+            print(f"No se pudo determinar el archivo de metadatos para la imagen {image_name}.")
+            return
+
+        # Cargar los datos clínicos usando ClinicalDataManager
+        try:
+            data = clinical_data_manager.load_clinical_data(excel_file)
+        except FileNotFoundError as e:
+            print(e)
+            return
+
+        # Extraer el ID del paciente del nombre de la imagen
+        try:
+            patient_id = f"#{image_name[3:6]}"  # Extraer los caracteres 3 a 6 y concatenar #
+        except IndexError:
+            print(f"No se pudo extraer un ID válido del nombre de la imagen: {image_name}.")
+            return
+
+        # Verificar si el ID existe en el archivo Excel
+        if patient_id not in data.index:
+            print(f"No se encontraron metadatos para el ID {patient_id} en el archivo {excel_file}.")
+            return
+
+        # Eliminar la fila correspondiente al ID
+        data = data.drop(index=patient_id)
+
+        # Guardar los datos actualizados en el archivo Excel
+        try:
+            data.to_excel(os.path.join(clinical_data_manager.clinical_data_folder, excel_file), index=True)
+            print(f"Metadatos para el ID {patient_id} eliminados del archivo {excel_file}.")
+        except Exception as e:
+            print(f"Error al guardar los datos actualizados en el archivo Excel: {e}")
+            
     def get_metadata(self, image_name):
         """
         Obtiene los metadatos de una imagen desde el archivo Excel.
@@ -121,21 +161,6 @@ class ImageManager:
         metadata = data.loc[patient_id].to_dict()
         return metadata
 
-    def delete_metadata(self, image_name):
-        """
-        Elimina los metadatos de una imagen.
-        :param image_name: Nombre de la imagen.
-        """
-        with open(self.metadata_file, 'r') as f:
-            data = json.load(f)
-
-        if image_name in data:
-            del data[image_name]
-            with open(self.metadata_file, 'w') as f:
-                json.dump(data, f, indent=4)
-            print(f"Metadatos para {image_name} eliminados.")
-        else:
-            print(f"No se encontraron metadatos para {image_name}.")
     
     def update_image_and_metadata(self, source_path, dest_name, metadata_updates=None, excel_file=None):
         """
