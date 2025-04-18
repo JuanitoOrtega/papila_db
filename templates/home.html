@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Datos PAPILA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Gestión de Datos del Dataset PAPILA</h1>
+        <div class="list-group">
+            <a href="{{ url_for('list_images') }}" class="list-group-item list-group-item-action">
+                Listar imágenes
+            </a>
+            <a href="{{ url_for('add_image') }}" class="list-group-item list-group-item-action">
+                Agregar imagen con metadatos
+            </a>
+            <a href="{{ url_for('update_image') }}" class="list-group-item list-group-item-action">
+                Modificar imagen y sus metadatos
+            </a>
+            <a href="{{ url_for('delete_image') }}" class="list-group-item list-group-item-action">
+                Eliminar imagen y sus metadatos
+            </a>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert mt-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
