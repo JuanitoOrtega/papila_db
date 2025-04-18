@@ -49,7 +49,10 @@ def main():
                 print(e)
         elif choice == "4":
             image_name = input("Nombre de la imagen a eliminar: ")
-            image_manager.delete_image(image_name)
+            try:
+                image_manager.delete_image(image_name, clinical_data_manager)
+            except Exception as e:
+                print(e)
         elif choice == "5":
             image_name = input("Nombre de la imagen: ")
             metadata = image_manager.get_metadata(image_name)
